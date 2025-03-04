@@ -1,12 +1,12 @@
 import { Text, View } from "react-native";
 
-const home = () => {
+const settings = () => {
   return (
     <View
       style={{flex: 1, justifyContent: "center", alignItems: "center", }}>
-      <Text>home</Text>
+      <Text>Settings</Text>
     </View>
   );
 }
 
-export default home;
+export default settings;
