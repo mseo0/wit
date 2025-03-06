@@ -1,8 +1,8 @@
 const theme = {
     colors: {
       primary: "#D9DFC6", 
-      secondary: "#FFF2C2",
-      background: "#EFF3EA",
+      secondary: "#ffe999",
+      background: "#e6ecdf",
       text: "#000000",
       darktext: "#677240",
       drawerActive: "#D9DFC6", 

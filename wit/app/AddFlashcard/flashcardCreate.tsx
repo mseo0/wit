@@ -1,12 +1,12 @@
 import { Text, View } from "react-native";
 
-const home = () => {
+const bin = () => {
   return (
     <View
       style={{flex: 1, justifyContent: "center", alignItems: "center", }}>
-      <Text></Text>
+      <Text>trash</Text>
     </View>
   );
 }
 
-export default home;
+export default bin;
