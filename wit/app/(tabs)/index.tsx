@@ -14,7 +14,7 @@ const home = () => {
       {/*button*/}
       <TouchableOpacity
         style = {styles.fcAdd}
-        onPress = {() => router.push("/AddFlashcard/flashcardCreate")}>
+        onPress = {() => router.push("./AddFlashcard/flashcardCreate")}>
 
           <Ionicons name = "add" size={30} color="white"/>
         </TouchableOpacity>

@@ -10,9 +10,12 @@ const DrawerLayout = () => {
       <Drawer screenOptions={{ 
         headerShown: true,
         headerTransparent: true,
+        headerTintColor: colors.colors.darktext,
         drawerStyle: {
           backgroundColor: colors.colors.drawerActive, 
         },
+        drawerActiveTintColor: colors.colors.darktext, 
+        drawerInactiveTintColor: colors.colors.darktext,
         }}>
 
         {/* Home Screen */}
