@@ -1,13 +1,13 @@
 const theme = {
     colors: {
-      primary: "#D9DFC6", 
-      secondary: "#ffd84d",
-      background: "#e6ecdf",
+      primary: "#577B8D", 
+      secondary: "#7E99A3",
+      background: "#4C585B",
       text: "#000000",
-      darktext: "#677240",
-      drawerActive: "#D9DFC6", 
-      drawerInactive: "#B0B0B0",
-      flashcard: "FFFDFD",
+      darktext: "#B9D9EB",
+      drawerActive: "#4C585B", 
+      drawerInactive: "#577B8D",
+      flashcard: "#FAF9F6",
     },
   };
   

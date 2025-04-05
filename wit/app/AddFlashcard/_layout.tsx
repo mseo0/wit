@@ -38,15 +38,7 @@ const DrawerLayout = () => {
             </TouchableOpacity>
           ),
 
-          // Drawer menu button on the right
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-              style={{ marginRight: margin }}
-            >
-              <Ionicons name="menu" size={24} color={colors.colors.darktext} />
-            </TouchableOpacity>
-          ),
+        
         })}
       >
         {/* Home Screen */}
