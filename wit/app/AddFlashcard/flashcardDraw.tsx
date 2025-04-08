@@ -41,6 +41,7 @@ const createFlash = () => {
   return (
     <View style={styles.container}>
       <View style={styles.slidersAndButtonsRow}>
+        {/* Stroke Width Slider */}
         <View
           style={[
             styles.sliderContainer,
@@ -63,6 +64,11 @@ const createFlash = () => {
             onValueChange={(value) => {
               setStrokeWidth(value);
               setShowPopup(true);
+
+              // Ensure the stroke width is updated dynamically
+              if (canvasRef.current) {
+                canvasRef.current.eraseMode(isEraserMode); // Maintain current mode
+              }
             }}
             onSlidingComplete={() => setShowPopup(false)}
             minimumTrackTintColor={colors.colors.darktext}
@@ -71,6 +77,7 @@ const createFlash = () => {
           />
         </View>
 
+        {/* Stroke Color Slider */}
         <View
           style={[
             styles.sliderContainer,
@@ -79,7 +86,7 @@ const createFlash = () => {
         >
           <View style={styles.gradientSlider}>
             <LinearGradient
-              colors={["#D3D3D3", "#000000"]}
+              colors={["#000000", "#D3D3D3"]} // Adjusted gradient to start with black
               start={[0, 0]}
               end={[1, 0]}
               style={StyleSheet.absoluteFill}
@@ -91,7 +98,8 @@ const createFlash = () => {
               step={0.01}
               value={0}
               onValueChange={(value) => {
-                const grayValue = Math.round((1 - value) * 211 + value * 0);
+                // Adjusted formula to cap the color at #D3D3D3 (211, 211, 211)
+                const grayValue = Math.round(value * 211); // Map value (0 to 1) to gray scale (0 to 211)
                 setStrokeColor(`rgb(${grayValue}, ${grayValue}, ${grayValue})`);
               }}
               minimumTrackTintColor="transparent"
@@ -101,6 +109,7 @@ const createFlash = () => {
           </View>
         </View>
 
+        {/* Buttons for Undo, Redo, and Eraser */}
         <View style={styles.buttonsContainer}>
           <Ionicons
             name="arrow-back"
@@ -125,7 +134,7 @@ const createFlash = () => {
               if (canvasRef.current) {
                 const newEraserMode = !isEraserMode;
                 canvasRef.current.eraseMode(newEraserMode);
-                setIsEraserMode(newEraserMode); // Toggle eraser mode
+                setIsEraserMode(newEraserMode);
               }
             }}
           >
@@ -137,6 +146,7 @@ const createFlash = () => {
         </View>
       </View>
 
+      {/* Flashcard Canvas */}
       <View
         style={[
           styles.flashcard,
@@ -146,8 +156,8 @@ const createFlash = () => {
         <ReactSketchCanvas
           ref={canvasRef}
           style={StyleSheet.absoluteFill}
-          strokeWidth={strokeWidth}
-          strokeColor={strokeColor}
+          strokeWidth={strokeWidth} // Stroke width applies to both drawing and eraser
+          strokeColor={isEraserMode ? "rgba(0,0,0,0)" : strokeColor} // Transparent color for eraser
           canvasColor={colors.colors.flashcard}
           allowOnlyPointerType="all"
         />
@@ -224,5 +234,17 @@ const styles = StyleSheet.create({
 
   activeEraserButton: {
     backgroundColor: colors.colors.primary, // Change color to indicate active state
+  },
+
+  gradientSlider: {
+    width: "100%",
+    height: 20,
+    borderRadius: 30,
+    overflow: "hidden",
+  },
+
+  slider: {
+    width: "100%",
+    height: 20,
   },
 });
