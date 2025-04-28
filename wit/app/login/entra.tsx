@@ -6,9 +6,18 @@ import * as Font from "expo-font";
 import { useRouter } from "expo-router";
 
 const config = {
+  auth:{
   clientId: "1c129f4f-46f0-4eb3-9ff8-f708880978a2", 
-  authority: "https://login.microsoftonline.com/" + "f1117260-f8a0-4080-a864-401f06c68314",
+  authority: "https://login.microsoftonline.com/" + "f1117260-f8a0-4080-a864-401f06c68314" + "/",
   redirectUri: "http://localhost:8081",
+  postLogoutRedirectUri: "http://localhost:8081",
+  navigateToLoginRequestURL: false,
+  },
+  cache: {
+    cacheLocation: "sessionStorage", // or "sessionStorage"
+    storeAuthStateInCookie: true, // set to true for IE 11
+  },
+
 };
 
 const EntraLogin = () => {
