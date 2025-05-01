@@ -3,12 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-nativ
 import colors from "../../colors.js";
 import * as Font from "expo-font";
 import { useRouter } from "expo-router";
+import { useFonts } from "expo-font";
 
 const Signup = () => {
-  alert("hahahah");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -28,15 +29,18 @@ const Signup = () => {
     console.log("Username:", username, "Password:", password);
   };
 
-  const handleLoginRedirect = () => {
-    router.push("/entra");
-  };
 
   return (
     <View style={styles.container}>
       <View style={styles.loginBox}>
         <Text style={styles.title}>Sign Up</Text>
         <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
           <TextInput
             style={styles.input}
             placeholder="Create Username"
@@ -61,7 +65,7 @@ const Signup = () => {
             <Text style={styles.buttonText}>SIGN UP</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={handleLoginRedirect}>
+        <TouchableOpacity onPress={() => router.push("/login")}>
           <Text style={styles.loginRedirectText}>Already have an account? Login</Text>
         </TouchableOpacity>
       </View>
@@ -100,14 +104,15 @@ const styles = StyleSheet.create({
   form: {
     width: "100%",
     marginBottom: 20,
+    justifyContent: "space-between", // Added to space out the boxes evenly
   },
   input: {
     borderWidth: 1,
     borderColor: "#FFFFFF",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,
-    backgroundColor: colors.colors.background,
+    marginBottom: 25, // Adjusted spacing between boxes
+    backgroundColor: "transparent",
     fontFamily: "RobotoMono-Regular",
     color: "#FFFFFF",
     width: "100%",

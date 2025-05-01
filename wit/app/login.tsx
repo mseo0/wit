@@ -4,6 +4,9 @@ import MSALClient from "react-native-msal";
 import colors from "../colors.js";
 import { AuthContext } from "../config/authContext";
 import { useContext } from "react";
+import { useRouter } from "expo-router";
+import { useFonts } from "expo-font";
+
 
 
 
@@ -22,7 +25,16 @@ const config = {
 };
 
 const EntraLogin = ({ onLogin }) => {
+  const [fontsLoaded] = useFonts({
+    CustomFont: require("../assets/fonts/RobotoMono-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const authContext = useContext(AuthContext);
+  const router = useRouter(); // Add router for navigation
 
   const [userInfo, setUserInfo] = useState(null);
   const [username, setUsername] = useState("");
@@ -35,8 +47,7 @@ const EntraLogin = ({ onLogin }) => {
         scopes: ["User.Read"],
       });
       setUserInfo(result.account);
-      authContext.logIn;
-
+      authContext.logIn(); // Call logIn after successful login
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -46,16 +57,16 @@ const EntraLogin = ({ onLogin }) => {
   return (
     <View style={styles.container}>
       <View style={styles.loginBox}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={[styles.title, { fontFamily: "CustomFont" }]}>Login</Text>
         <View style={styles.form}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { fontFamily: "CustomFont" }]}
             placeholder="Username/Email"
             value={username}
             onChangeText={setUsername}
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { fontFamily: "CustomFont" }]}
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
@@ -63,12 +74,12 @@ const EntraLogin = ({ onLogin }) => {
           />
           <TouchableOpacity 
             style={styles.loginButton} 
-            onPress={authContext.logIn} // Fixed the onPress handler
+            onPress={authContext.logIn} // Ensure the correct function reference
           >
-            <Text style={styles.buttonText}>LOGIN</Text>
+            <Text style={[styles.buttonText, { fontFamily: "CustomFont" }]}>LOGIN</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.orText}>Or Sign in with:</Text>
+        <Text style={[styles.orText, { fontFamily: "CustomFont" }]}>Or Sign in with:</Text>
         <TouchableOpacity 
           style={styles.microsoftButton} 
           onPress={handleLogin}
@@ -78,8 +89,10 @@ const EntraLogin = ({ onLogin }) => {
             style={styles.microsoftLogo}
           />
         </TouchableOpacity>
-        <TouchableOpacity >
-          <Text style={styles.signUpText}>Sign Up</Text>
+        <TouchableOpacity 
+          onPress={() => router.push("/signup/signup")} // Navigate to signup screen
+        >
+          <Text style={[styles.signUpText, { fontFamily: "CustomFont" }]}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -123,7 +136,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 25,
     fontFamily: "RobotoMono-Regular",
     color: "#FFFFFF",
     width: "100%",

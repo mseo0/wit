@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
-    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/slider": "^4.5.5",
     "@react-native-vector-icons/fontisto": "^3.0.4",
     "@react-native-vector-icons/ionicons": "^7.4.0",
