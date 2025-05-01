@@ -1,0 +1,17 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+      "FUNCTIONS_WORKER_RUNTIME": "node",
+      "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "COSMOS_DATABASE": "wit-database",
+      "COSMOS_CONTAINER": "wit-container",
+      "COSMOS_ENDPOINT": "https://cosmoswit.documents.azure.com:443/",
+      "COSMOS_KEY": "your-cosmos-key"
+    },git commit --amend --all
+    "Host": {
+      "LocalHttpPort": 8081,
+      "CORS": "*",
+      "CORSCredentials": false
+    }
+  }
