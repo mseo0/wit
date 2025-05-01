@@ -5,6 +5,7 @@ import * as Font from "expo-font";
 import { useRouter } from "expo-router";
 
 const Signup = () => {
+  alert("hahahah");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,7 +29,7 @@ const Signup = () => {
   };
 
   const handleLoginRedirect = () => {
-    router.push("./entra");
+    router.push("/entra");
   };
 
   return (

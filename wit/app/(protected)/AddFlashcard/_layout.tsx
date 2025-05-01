@@ -1,11 +1,11 @@
 import "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
+import { Drawer } from "expo-router/drawer.js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router"; 
 import { DrawerActions } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
-import colors from "../../colors.js";
+import colors from "../../../colors.js";
 
 const margin = 12;
 

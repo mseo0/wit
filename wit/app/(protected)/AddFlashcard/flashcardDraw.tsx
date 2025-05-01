@@ -10,7 +10,7 @@ import {
   Animated,
 } from "react-native";
 import Slider from "@react-native-community/slider";
-import colors from "../../colors.js";
+import colors from "../../../colors.js";
 import { useFonts } from "expo-font";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { Ionicons } from "@expo/vector-icons";
@@ -89,7 +89,7 @@ const createFlash = () => {
   });
 
   const [fontsLoaded] = useFonts({
-    CustomFont: require("../../assets/fonts/RobotoMono-Regular.ttf"),
+    CustomFont: require("../../../assets/fonts/RobotoMono-Regular.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -217,7 +217,7 @@ const createFlash = () => {
             }}
           >
             <Image
-              source={require("../../assets/icons/eraser.png")}
+              source={require("../../../assets/icons/eraser.png")}
               style={styles.eraserIcon}
             />
           </TouchableOpacity>

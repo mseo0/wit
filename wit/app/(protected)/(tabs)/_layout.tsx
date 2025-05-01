@@ -1,8 +1,8 @@
 import "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
+import { Drawer } from "expo-router/drawer.js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../colors.js";
+import colors from "../../../colors.js";
 
 const DrawerLayout = () => {
   return (
@@ -35,8 +35,6 @@ const DrawerLayout = () => {
           }}
         />
 
-       
-
         {/* Settings */}
         <Drawer.Screen
           name="settingsMain"
@@ -49,8 +47,10 @@ const DrawerLayout = () => {
           }}
         />
       </Drawer>
+
     </GestureHandlerRootView>
   );
 };
+
 
 export default DrawerLayout;

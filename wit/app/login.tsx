@@ -1,97 +1,87 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image } from "react-native";
 import MSALClient from "react-native-msal";
-import colors from "../../colors.js";
-import * as Font from "expo-font";
-import { useRouter } from "expo-router";
+import colors from "../colors.js";
+import { AuthContext } from "../config/authContext";
+import { useContext } from "react";
+
+
 
 const config = {
-  auth:{
-  clientId: "1c129f4f-46f0-4eb3-9ff8-f708880978a2", 
-  authority: "https://login.microsoftonline.com/" + "f1117260-f8a0-4080-a864-401f06c68314" + "/",
-  redirectUri: "http://localhost:8081",
-  postLogoutRedirectUri: "http://localhost:8081",
-  navigateToLoginRequestURL: false,
+  auth: {
+    clientId: "1c129f4f-46f0-4eb3-9ff8-f708880978a2",
+    authority: "https://login.microsoftonline.com/" + "f1117260-f8a0-4080-a864-401f06c68314" + "/",
+    redirectUri: "http://localhost:8081",
+    postLogoutRedirectUri: "http://localhost:8081",
+    navigateToLoginRequestURL: false,
   },
   cache: {
-    cacheLocation: "sessionStorage", // or "sessionStorage"
-    storeAuthStateInCookie: true, // set to true for IE 11
+    cacheLocation: "sessionStorage",
+    storeAuthStateInCookie: true,
   },
-
 };
 
-const EntraLogin = () => {
+const EntraLogin = ({ onLogin }) => {
+  const authContext = useContext(AuthContext);
+
   const [userInfo, setUserInfo] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
-
-  useEffect(() => {
-    const loadFonts = async () => {
-      await Font.loadAsync({
-        "RobotoMono-Regular": require("../../assets/fonts/RobotoMono-Regular.ttf"),
-      });
-    };
-    loadFonts();
-  }, []);
 
   const handleLogin = async () => {
     try {
       const client = new MSALClient(config);
       const result = await client.acquireToken({
-        scopes: ["User.Read"], 
+        scopes: ["User.Read"],
       });
       setUserInfo(result.account);
+      authContext.logIn;
+
     } catch (error) {
       console.error("Login failed", error);
     }
   };
 
-  const handleUsernamePasswordLogin = () => {
-    if (username && password) {
-      console.log("Username:", username, "Password:", password);
-    } else {
-      console.error("Please enter both username and password");
-    }
-  };
 
   return (
     <View style={styles.container}>
-      {userInfo ? (
-        <Text style={styles.text}>Welcome, {userInfo.username}</Text>
-      ) : (
-        <View style={styles.loginBox}>
-          <Text style={styles.title}>Login</Text>
-          <View style={styles.form}>
-            <TextInput
-              style={styles.input}
-              placeholder="Username"
-              value={username}
-              onChangeText={setUsername}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-            <TouchableOpacity style={styles.loginButton} onPress={handleUsernamePasswordLogin}>
-              <Text style={styles.buttonText}>LOGIN</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.orText}>Or Sign in with:</Text>
-          <TouchableOpacity style={styles.microsoftButton} onPress={handleLogin}>
-            <Image
-              source={require("../../assets/icons/microsoft.png")}
-              style={styles.microsoftLogo}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("./signup")}>
-            <Text style={styles.signUpText}>Sign Up</Text>
+      <View style={styles.loginBox}>
+        <Text style={styles.title}>Login</Text>
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Username/Email"
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          <TouchableOpacity 
+            style={styles.loginButton} 
+            onPress={authContext.logIn} // Fixed the onPress handler
+          >
+            <Text style={styles.buttonText}>LOGIN</Text>
           </TouchableOpacity>
         </View>
-      )}
+        <Text style={styles.orText}>Or Sign in with:</Text>
+        <TouchableOpacity 
+          style={styles.microsoftButton} 
+          onPress={handleLogin}
+        >
+          <Image
+            source={require("../assets/icons/microsoft.png")}
+            style={styles.microsoftLogo}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity >
+          <Text style={styles.signUpText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
