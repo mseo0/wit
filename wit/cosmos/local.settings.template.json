@@ -4,14 +4,14 @@
       "FUNCTIONS_WORKER_RUNTIME": "node",
       "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
       "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-      "COSMOS_DATABASE": "wit-database",
-      "COSMOS_CONTAINER": "wit-container",
-      "COSMOS_ENDPOINT": "https://cosmoswit.documents.azure.com:443/",
-      "COSMOS_KEY": "your-cosmos-key"
+      "COSMOS_DATABASE": "<your-database-name>",
+      "COSMOS_CONTAINER": "<your-container-name>",
+      "COSMOS_ENDPOINT": "<your-cosmos-endpoint>",
+      "COSMOS_KEY": "<your-cosmos-key>"
     },
     "Host": {
       "LocalHttpPort": 8081,
       "CORS": "*",
       "CORSCredentials": false
     }
-  }
+}

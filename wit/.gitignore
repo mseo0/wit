@@ -38,4 +38,4 @@ yarn-error.*
 app-example
 
 #cosmos directs
-local.settings.json
+**/local.settings.json
