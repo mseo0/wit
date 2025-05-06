@@ -12,8 +12,10 @@ import {
 import Slider from "@react-native-community/slider";
 import colors from "../../../colors.js";
 import { useFonts } from "expo-font";
-import { ReactSketchCanvas } from "react-sketch-canvas";
+import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { Ionicons } from "@expo/vector-icons";
+import * as SplashScreen from 'expo-splash-screen';
+
 
 const createFlash = () => {
   const [flashcards, setFlashcards] = useState([{ id: 1 }]);
@@ -23,8 +25,10 @@ const createFlash = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
-  const frontCanvasRefs = useRef([]);
-  const backCanvasRefs = useRef([]);
+  
+  
+  const frontCanvasRefs = useRef<ReactSketchCanvasRef[]>([]);
+  const backCanvasRefs = useRef<ReactSketchCanvasRef[]>([]);
 
   const flipAnim = useRef(new Animated.Value(0)).current;
 
@@ -89,11 +93,14 @@ const createFlash = () => {
   });
 
   const [fontsLoaded] = useFonts({
-    CustomFont: require("../../../assets/fonts/RobotoMono-Regular.ttf"),
+    RobotoMono: require("../../../assets/fonts/RobotoMono-Regular.ttf"),
   });
 
   if (!fontsLoaded) {
-    return null;
+    SplashScreen.setOptions({
+      duration: 1000,
+      fade: true,
+    });
   }
 
   const screenWidth = Dimensions.get("window").width;
@@ -105,9 +112,19 @@ const createFlash = () => {
   const adjustedFlashcardWidth = Math.min(maxFlashcardWidth, (maxFlashcardHeight * 5) / 3);
   const adjustedFlashcardHeight = adjustedFlashcardWidth * (3 / 5);
 
+  const flashHeight = adjustedFlashcardHeight * 2;
+
+
+  const sideIndicatorTop = screenHeight * 0.05; // Adjusts dynamically to 10% of the screen height
+
   return (
     <View style={styles.container}>
-      <Text style={styles.sideIndicator}>
+      <Text
+        style={[
+          styles.sideIndicator,
+          { fontFamily: "RobotoMono", top: sideIndicatorTop },
+        ]}
+      >
         {isFlipped ? "Back" : "Front"} - {currentCardIndex + 1}/{flashcards.length}
       </Text>
 
@@ -120,7 +137,7 @@ const createFlash = () => {
         >
           {showPopup && (
             <View style={styles.popup}>
-              <Text style={[styles.popupText, { fontFamily: "CustomFont" }]}>
+              <Text style={[styles.popupText, { fontFamily: "RobotoMono" }]}>
                 {(strokeWidth - 2).toFixed(1)}
               </Text>
             </View>
@@ -353,6 +370,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "bold",
+    fontFamily: "RobotoMono",
   },
 
   activeEraserButton: {
@@ -412,6 +430,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+    fontFamily: "RobotoMono",
   },
 
   flipText: {
@@ -419,13 +438,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.colors.darktext,
     textAlign: "center",
+    fontFamily: "RobotoMono",
   },
 
   sideIndicator: {
     position: "absolute",
-    top: 400,
     color: "#fff",
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -433,5 +452,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 5,
     zIndex: 2,
+    fontFamily: "RobotoMono",
   },
 });

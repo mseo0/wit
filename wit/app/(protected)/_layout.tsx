@@ -2,6 +2,7 @@ import { AuthContext } from "../../config/authContext";
 import { Redirect, Stack } from "expo-router";
 import { useContext } from "react";
 
+
 export const unstable_settings = {
   initialRouteName: "(tabs)", // anchor
 };
@@ -26,15 +27,14 @@ export default function ProtectedLayout() {
         }}
       />
       <Stack.Screen
-        name="Add Flashcard"
+        name="AddFlashcard"
         options={{
-          presentation: "modal",
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="StudyFlashcard"
         options={{
-          presentation: "modal",
           headerShown: false,
         }}
       />

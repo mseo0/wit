@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image } from "react-native";
 import MSALClient from "react-native-msal";
 import colors from "../colors.js";
@@ -6,7 +6,8 @@ import { AuthContext } from "../config/authContext";
 import { useContext } from "react";
 import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
-
+import { postExampleDATA } from "../cosmos/apiService";
+import * as SplashScreen from 'expo-splash-screen';
 
 
 
@@ -29,10 +30,7 @@ const EntraLogin = ({ onLogin }) => {
     CustomFont: require("../assets/fonts/RobotoMono-Regular.ttf"),
   });
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
+ 
   const authContext = useContext(AuthContext);
   const router = useRouter(); // Add router for navigation
 
@@ -46,18 +44,41 @@ const EntraLogin = ({ onLogin }) => {
       const result = await client.acquireToken({
         scopes: ["User.Read"],
       });
-      setUserInfo(result.account);
+
+      const user = result.account;
+      setUserInfo(user);
       authContext.logIn(); // Call logIn after successful login
+
+      // Prepare user data
+      const userData = {
+        id: user.homeAccountId, // Unique identifier
+        name: user.name || "Unknown", // Fallback if name is not available
+        email: user.username, // Assuming username is the email
+        password: "", // Leave blank or handle securely if needed
+      };
+
+      // Save user data to Cosmos DB
+      console.log("Saving user data to Cosmos DB:", userData); // Log user data
+      const response = await postExampleDATA(userData);
+      console.log("Response from postExampleDATA:", response); // Log response
     } catch (error) {
       console.error("Login failed", error);
     }
   };
 
+  // Render a loading state if fonts are not loaded
+  if (!fontsLoaded) {
+    SplashScreen.setOptions({
+      duration: 1000,
+      fade: true,
+    });
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.loginBox}>
         <Text style={[styles.title, { fontFamily: "CustomFont" }]}>Login</Text>
+        
         <View style={styles.form}>
           <TextInput
             style={[styles.input, { fontFamily: "CustomFont" }]}
@@ -72,26 +93,21 @@ const EntraLogin = ({ onLogin }) => {
             onChangeText={setPassword}
             secureTextEntry
           />
-          <TouchableOpacity 
-            style={styles.loginButton} 
-            onPress={authContext.logIn} // Ensure the correct function reference
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={authContext.logIn} // Call handleLogin on button press
           >
-            <Text style={[styles.buttonText, { fontFamily: "CustomFont" }]}>LOGIN</Text>
+            <Text style={[styles.buttonText, { fontFamily: "CustomFont" }]}>Login</Text>
           </TouchableOpacity>
         </View>
         <Text style={[styles.orText, { fontFamily: "CustomFont" }]}>Or Sign in with:</Text>
-        <TouchableOpacity 
-          style={styles.microsoftButton} 
-          onPress={handleLogin}
-        >
+        <TouchableOpacity style={styles.microsoftButton} onPress={handleLogin}>
           <Image
             source={require("../assets/icons/microsoft.png")}
             style={styles.microsoftLogo}
           />
         </TouchableOpacity>
-        <TouchableOpacity 
-          onPress={() => router.push("/signup/signup")} // Navigate to signup screen
-        >
+        <TouchableOpacity onPress={() => router.push("/signup/signup")}>
           <Text style={[styles.signUpText, { fontFamily: "CustomFont" }]}>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -107,6 +123,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.colors.background,
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "#FFFFFF",
+    fontFamily: "RobotoMono-Regular",
   },
   loginBox: {
     backgroundColor: colors.colors.primary,
@@ -141,13 +162,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     width: "100%",
     textAlign: "left",
-  },
-  forgotPassword: {
-    fontSize: 12,
-    color: "#FFFFFF",
-    textAlign: "right",
-    marginBottom: 15,
-    fontFamily: "RobotoMono-Regular",
   },
   loginButton: {
     backgroundColor: "#89CFF0",

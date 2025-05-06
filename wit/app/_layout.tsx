@@ -7,7 +7,7 @@ export default function ProtectedLayout() {
     <AuthProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="(protected))"
+          name="(protected)"
           options={{
             animation: "none",
           }}

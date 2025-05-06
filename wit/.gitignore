@@ -39,3 +39,6 @@ app-example
 
 #cosmos directs
 **/local.settings.json
+
+# cosmos directory
+cosmos/local.settings.json

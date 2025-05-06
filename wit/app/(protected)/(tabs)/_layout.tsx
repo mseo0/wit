@@ -3,6 +3,7 @@ import { Drawer } from "expo-router/drawer.js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../../../colors.js";
+import React from "react";
 
 const DrawerLayout = () => {
   return (

@@ -18,18 +18,28 @@ export const fetchExampleDATA = async (): Promise<Example[]> => {
   }
 };
 
-export const postExampleDATA = async (name: string): Promise<Example> => {
+export const postExampleDATA = async (userData: {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}): Promise<Example> => {
   try {
     const response = await fetch(`${API_URL}/api/upsertExample`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: "", name }),
+      body: JSON.stringify(userData),
     });
+
+    if (!response.ok) {
+      throw new Error("Failed to save user data");
+    }
+
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error("Error saving user data:", error);
     throw error;
   }
 };
