@@ -12,25 +12,35 @@ import {
 import Slider from "@react-native-community/slider";
 import colors from "../../../colors.js";
 import { useFonts } from "expo-font";
-import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
+import { ReactSketchCanvas, ReactSketchCanvasRef, CanvasPath } from "react-sketch-canvas";
 import { Ionicons } from "@expo/vector-icons";
-import * as SplashScreen from 'expo-splash-screen';
-
+import * as SplashScreen from "expo-splash-screen";
+import { AuthContext } from "../../../config/authContext";
+import { useContext } from "react";
 
 const createFlash = () => {
-  const [flashcards, setFlashcards] = useState([{ id: 1 }]);
+  interface Flashcard {
+    id: number;
+    setId: string;
+    front: CanvasPath[];
+    back: CanvasPath[];
+  }
+  
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([{ id: 1, setId: "set1", front: [], back: [] }]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [showPopup, setShowPopup] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
-  
-  
+
   const frontCanvasRefs = useRef<ReactSketchCanvasRef[]>([]);
   const backCanvasRefs = useRef<ReactSketchCanvasRef[]>([]);
 
   const flipAnim = useRef(new Animated.Value(0)).current;
+
+  const authContext = useContext(AuthContext);
+
 
   const handleFlip = () => {
     Animated.timing(flipAnim, {
@@ -61,13 +71,23 @@ const createFlash = () => {
     const frontData = await frontCanvasRefs.current[currentCardIndex]?.exportPaths();
     const backData = await backCanvasRefs.current[currentCardIndex]?.exportPaths();
 
+    // Use createNewSet to generate a unique setId
+    const setId = flashcards[currentCardIndex]?.setId || authContext.createNewSet();
+
     updatedFlashcards[currentCardIndex] = {
       id: flashcards[currentCardIndex]?.id || currentCardIndex + 1,
+      setId, // Assign the setId
       front: frontData || [],
       back: backData || [],
     };
 
-    updatedFlashcards.push({ id: updatedFlashcards.length + 1, front: [], back: [] });
+    // Add a new blank flashcard with a new setId
+    updatedFlashcards.push({
+      id: updatedFlashcards.length + 1,
+      setId: authContext.createNewSet(), // Generate a new setId for the new flashcard
+      front: [],
+      back: [],
+    });
 
     frontCanvasRefs.current[currentCardIndex]?.clearCanvas();
     backCanvasRefs.current[currentCardIndex]?.clearCanvas();
@@ -75,6 +95,42 @@ const createFlash = () => {
     setFlashcards(updatedFlashcards);
     setCurrentCardIndex(updatedFlashcards.length - 1);
     setIsEraserMode(false);
+  };
+
+  const saveFlashcard = async () => {
+    const frontData = await frontCanvasRefs.current[currentCardIndex]?.exportPaths();
+    const backData = await backCanvasRefs.current[currentCardIndex]?.exportPaths();
+
+    const updatedFlashcard = {
+      ...flashcards[currentCardIndex],
+      front: frontData || [],
+      back: backData || [],
+    };
+
+    setFlashcards((prev) => {
+      const updated = [...prev];
+      updated[currentCardIndex] = updatedFlashcard;
+      return updated;
+    });
+
+    // Save to AuthContext
+    if (currentCardIndex < authContext.flashcards.length) {
+      authContext.updateFlashcard(currentCardIndex, updatedFlashcard);
+    } else {
+      authContext.addFlashcard(updatedFlashcard);
+    }
+  };
+
+  const saveAndExit = async () => {
+    await saveFlashcard();
+
+    // Add a 1ms delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Update the total flashcard count in AuthContext
+    authContext.setFlashcardCount(flashcards.length);
+
+    authContext.backHome();
   };
 
   const flipRotation = flipAnim.interpolate({
@@ -114,11 +170,19 @@ const createFlash = () => {
 
   const flashHeight = adjustedFlashcardHeight * 2;
 
-
   const sideIndicatorTop = screenHeight * 0.05; // Adjusts dynamically to 10% of the screen height
 
   return (
     <View style={styles.container}>
+      <View style={styles.topRightButtons}>
+        <TouchableOpacity style={styles.saveButton} onPress={saveFlashcard}>
+          <Text style={[styles.buttonText, { fontFamily: "RobotoMono" }]}>Save</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveExitButton} onPress={saveAndExit}>
+          <Text style={[styles.buttonText, { fontFamily: "RobotoMono" }]}>Save & Exit</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text
         style={[
           styles.sideIndicator,
@@ -288,17 +352,11 @@ const createFlash = () => {
       </View>
 
       <View style={styles.buttonsRow}>
-        <TouchableOpacity
-          style={styles.flipButton}
-          onPress={handleFlip}
-        >
+        <TouchableOpacity style={styles.flipButton} onPress={handleFlip}>
           <Ionicons name="swap-horizontal" size={24} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.addCardButton}
-          onPress={addFlashcard}
-        >
+        <TouchableOpacity style={styles.addCardButton} onPress={addFlashcard}>
           <Ionicons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -315,7 +373,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.colors.background,
   },
-
   slidersAndButtonsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -323,28 +380,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     columnGap: 20,
   },
-
   sliderContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
-
   buttonsContainer: {
     flexDirection: "row",
     gap: 10,
   },
-
   iconButton: {
     backgroundColor: colors.colors.darktext,
     padding: 5,
     borderRadius: 25,
   },
-
   eraserIcon: {
     width: 24,
     height: 24,
   },
-
   flashcard: {
     borderRadius: 35,
     backgroundColor: colors.colors.flashcard,
@@ -357,7 +409,6 @@ const styles = StyleSheet.create({
     elevation: 8,
     overflow: "hidden",
   },
-
   popup: {
     position: "absolute",
     top: -30,
@@ -365,37 +416,31 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
   },
-
   popupText: {
     color: "#fff",
     fontSize: 14,
     fontWeight: "bold",
     fontFamily: "RobotoMono",
   },
-
   activeEraserButton: {
     backgroundColor: colors.colors.primary,
   },
-
   gradientSlider: {
     width: "100%",
     height: 20,
     borderRadius: 30,
     overflow: "hidden",
   },
-
   slider: {
     width: "100%",
     height: 20,
   },
-
   buttonsRow: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
   },
-
   flipButton: {
     backgroundColor: colors.colors.primary,
     width: 50,
@@ -410,7 +455,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-
   addCardButton: {
     backgroundColor: colors.colors.primary,
     width: 50,
@@ -425,22 +469,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-
-  flipButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "RobotoMono",
-  },
-
-  flipText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.colors.darktext,
-    textAlign: "center",
-    fontFamily: "RobotoMono",
-  },
-
   sideIndicator: {
     position: "absolute",
     color: "#fff",
@@ -453,5 +481,41 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex: 2,
     fontFamily: "RobotoMono",
+  },
+  topRightButtons: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    flexDirection: "row",
+    gap: 10,
+    zIndex: 3,
+  },
+  saveButton: {
+    backgroundColor: colors.colors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  saveExitButton: {
+    backgroundColor: colors.colors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

@@ -8,6 +8,7 @@ const theme = {
       drawerActive: "#4C585B", 
       drawerInactive: "#577B8D",
       flashcard: "#FAF9F6",
+      hoverBackground: "#577B8D",
     },
   };
   

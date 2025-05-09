@@ -47,6 +47,17 @@ const DrawerLayout = () => {
             ),
           }}
         />
+
+        <Drawer.Screen
+          name="flashcardStudy"
+          options={{
+            headerShown: false,
+            drawerLabel: "",
+            headerTitle: "",
+            
+          }}
+        />
+
       </Drawer>
 
     </GestureHandlerRootView>

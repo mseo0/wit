@@ -4,6 +4,8 @@ import colors from "../../colors.js";
 import * as Font from "expo-font";
 import { useRouter } from "expo-router";
 import { useFonts } from "expo-font";
+import { useContext } from "react";
+import { AuthContext } from "../../config/authContext";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -11,6 +13,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const router = useRouter();
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -26,6 +29,7 @@ const Signup = () => {
       console.error("Passwords do not match");
       return;
     }
+    authContext.logOut(); 
     console.log("Username:", username, "Password:", password);
   };
 
