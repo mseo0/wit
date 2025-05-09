@@ -26,7 +26,7 @@ const createFlash = () => {
     back: CanvasPath[];
   }
   
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([{ id: 1, setId: "set1", front: [], back: [] }]);
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([{ id: 0, setId: "set1", front: [], back: [] }]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [strokeColor, setStrokeColor] = useState("#000000");

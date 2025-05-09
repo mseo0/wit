@@ -64,12 +64,13 @@ const home = () => {
     loadFlashcardSets();
   }, [flashcards]);
 
-  if (!fontsLoaded) {
-    SplashScreen.setOptions({
-          duration: 1000,
-          fade: true,
-        });
-  }
+  useEffect(() => {
+    if (!fontsLoaded) {
+      SplashScreen.preventAutoHideAsync(); // Prevent splash screen from hiding
+    } else {
+      SplashScreen.hideAsync(); // Hide splash screen when fonts are loaded
+    }
+  }, [fontsLoaded]);
 
   return (
     <View style={styles.container}>
@@ -92,8 +93,8 @@ const home = () => {
             onMouseEnter={(e) => e.target.style.backgroundColor = colors.colors.primary} // Darken on hover
             onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"} // Reset on hover out
           >
-            <Text style={styles.flashcardSetCount}>Cards: {set.count}</Text>
             <Text style={styles.flashcardSetText}>{set.setId}</Text>
+            <Text style={styles.flashcardSetCount}>Cards: {set.count}</Text>
           </TouchableOpacity>
         ))}
       </View>

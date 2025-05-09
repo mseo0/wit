@@ -1,20 +1,39 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AuthContext } from "../../../config/authContext";
 import colors from "../../../colors.js";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
+import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas"; // Import ReactSketchCanvas
 
 const FlashcardStudy = () => {
   const { setId } = useLocalSearchParams(); // Use useLocalSearchParams to get the setId
-  const { flashcards, backHome } = useContext(AuthContext); // Correctly use AuthContext without parentheses
+  const { flashcards, backHome } = useContext(AuthContext); // Correctly use AuthContext
   const router = useRouter();
 
-  const setFlashcards = flashcards.filter((card) => card.setId === setId); // Filter flashcards for the selected set
+  // Ensure setId is a string and filter flashcards for the selected set
+  const setFlashcards = flashcards.filter((card) => card.setId === String(setId)); 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
   const flipAnim = useRef(new Animated.Value(0)).current;
+  const frontCanvasRef = useRef<ReactSketchCanvasRef>(null);
+  const backCanvasRef = useRef<ReactSketchCanvasRef>(null);
+
+  useEffect(() => {
+    // Load the front and back paths into the canvas when the currentIndex changes
+    if (setFlashcards[currentIndex]) {
+      const { front, back } = setFlashcards[currentIndex];
+      if (frontCanvasRef.current) {
+        frontCanvasRef.current.clearCanvas();
+        frontCanvasRef.current.loadPaths(front);
+      }
+      if (backCanvasRef.current) {
+        backCanvasRef.current.clearCanvas();
+        backCanvasRef.current.loadPaths(back);
+      }
+    }
+  }, [currentIndex, setFlashcards]);
 
   const handleFlip = () => {
     Animated.timing(flipAnim, {
@@ -80,7 +99,7 @@ const FlashcardStudy = () => {
     <View style={styles.container}>
       {/* Back Button */}
       <TouchableOpacity style={styles.backButtonTop} onPress={backHome}>
-        <Ionicons name="arrow-back" size={24} color={colors.colors.text} />
+        <Ionicons name="arrow-back" size={24} color={colors.colors.darktext} />
       </TouchableOpacity>
 
       {/* Set ID */}
@@ -119,11 +138,14 @@ const FlashcardStudy = () => {
             isFlipped ? { zIndex: -1 } : { zIndex: 1 },
           ]}
         >
-          <View style={styles.flashcardContent}>
-            <Text style={styles.flashcardText}>
-              {setFlashcards[currentIndex].front.join(", ") || "No Front Content"}
-            </Text>
-          </View>
+          <ReactSketchCanvas
+            ref={frontCanvasRef}
+            style={StyleSheet.absoluteFill}
+            strokeWidth={4}
+            strokeColor="#000"
+            canvasColor={colors.colors.flashcard}
+            allowOnlyPointerType="all"
+          />
         </Animated.View>
         <Animated.View
           style={[
@@ -135,11 +157,14 @@ const FlashcardStudy = () => {
             isFlipped ? { zIndex: 1 } : { zIndex: -1 },
           ]}
         >
-          <View style={styles.flashcardContent}>
-            <Text style={styles.flashcardText}>
-              {setFlashcards[currentIndex].back.join(", ") || "No Back Content"}
-            </Text>
-          </View>
+          <ReactSketchCanvas
+            ref={backCanvasRef}
+            style={StyleSheet.absoluteFill}
+            strokeWidth={4}
+            strokeColor="#000"
+            canvasColor={colors.colors.flashcard}
+            allowOnlyPointerType="all"
+          />
         </Animated.View>
       </View>
       <View style={styles.navigationButtons}>
