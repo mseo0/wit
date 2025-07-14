@@ -1,2 +1,2 @@
 # wit
-Flashcard app *under development*
+Flashcard app
